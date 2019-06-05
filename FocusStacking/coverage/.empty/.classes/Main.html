@@ -61,7 +61,7 @@
     0%
   </span>
   <span class="absValue">
-    (0/ 9)
+    (0/ 10)
   </span>
 </td>
 </tr>
@@ -73,31 +73,33 @@
 
 
 <div class="sourceCode"><i>1</i>&nbsp;import java.io.IOException;
-<i>2</i>&nbsp;
-<b class="nc"><i>3</i>&nbsp;public class Main {</b>
-<i>4</i>&nbsp;
-<i>5</i>&nbsp;    public static void main(String[] args) {
-<b class="nc"><i>6</i>&nbsp;        System.out.println(&quot;Started&quot;);</b>
-<i>7</i>&nbsp;
-<i>8</i>&nbsp;        //String[] paths = new String[] {&quot;bark-1.jpg&quot;, &quot;bark-2.jpg&quot;, &quot;bark-3.jpg&quot;, &quot;bark-4.jpg&quot;, &quot;bark-5.jpg&quot;, &quot;bark-6.jpg&quot;, &quot;bark-7.jpg&quot;, &quot;bark-8.jpg&quot;, &quot;bark-9.jpg&quot;, &quot;bark-10.jpg&quot;, &quot;bark-11.jpg&quot;, &quot;bark-12.jpg&quot;};
-<b class="nc"><i>9</i>&nbsp;        String[] paths = new String[] {&quot;bark-1.jpg&quot;, &quot;bark-5.jpg&quot;, &quot;bark-11.jpg&quot;};</b>
-<i>10</i>&nbsp;
-<b class="nc"><i>11</i>&nbsp;        FocusStacking fstack = new FocusStacking();</b>
-<i>12</i>&nbsp;        try {
-<b class="nc"><i>13</i>&nbsp;            fstack.Stack(paths, &quot;./output.jpg&quot;);</b>
-<b class="nc"><i>14</i>&nbsp;        } catch (IOException e) {</b>
-<b class="nc"><i>15</i>&nbsp;            e.printStackTrace();</b>
-<b class="nc"><i>16</i>&nbsp;        }</b>
-<i>17</i>&nbsp;
-<b class="nc"><i>18</i>&nbsp;        System.out.println(&quot;Finished&quot;);</b>
-<i>19</i>&nbsp;    }
-<i>20</i>&nbsp;}
+<i>2</i>&nbsp;import java.time.LocalDateTime;
+<i>3</i>&nbsp;
+<b class="nc"><i>4</i>&nbsp;public class Main {</b>
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;    public static void main(String[] args) {
+<b class="nc"><i>7</i>&nbsp;        System.out.println(&quot;Started&quot;);</b>
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;        //String[] paths = new String[] {&quot;150x100-Humming-bird-top-blur.png&quot;, &quot;150x100-Humming-bird-left-blur.png&quot;, &quot;150x100-Humming-bird-right-blur.png&quot;};
+<b class="nc"><i>10</i>&nbsp;        String[] paths = new String[] {&quot;90x60-Humming-bird-top-blur.png&quot;, &quot;90x60-Humming-bird-left-blur.png&quot;, &quot;90x60-Humming-bird-right-blur.png&quot;};</b>
+<i>11</i>&nbsp;        //String[] paths = new String[] {&quot;150x100-double-mirrored-humming-bird-top-blur.png&quot;, &quot;150x100-double-mirrored-humming-bird-left-blur.png&quot;, &quot;150x100-double-mirrored-humming-bird-right-blur.png&quot;};
+<b class="nc"><i>12</i>&nbsp;        int windowSize = 16;</b>
+<i>13</i>&nbsp;
+<b class="nc"><i>14</i>&nbsp;        FocusStacking fstack = new FocusStacking(windowSize);</b>
+<i>15</i>&nbsp;        try {
+<b class="nc"><i>16</i>&nbsp;            fstack.Stack(paths, &quot;output_&quot;+windowSize+&quot;_&quot;+LocalDateTime.now().toString()+&quot;.png&quot;);</b>
+<b class="nc"><i>17</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>18</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>19</i>&nbsp;        }</b>
+<b class="nc"><i>20</i>&nbsp;        System.out.println(&quot;Finished&quot;);</b>
+<i>21</i>&nbsp;    }
+<i>22</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-05-28 06:02</div>
+    <div style="float:right;">generated on 2019-06-05 10:50</div>
 </div>
 </body>
 </html>
