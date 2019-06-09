@@ -58,10 +58,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    94.6%
   </span>
   <span class="absValue">
-    (64/ 64)
+    (70/ 74)
   </span>
 </td>
 </tr>
@@ -87,135 +87,147 @@
 <b class="fc"><i>13</i>&nbsp;    static int[] windowSizes = null;</b>
 <b class="fc"><i>14</i>&nbsp;    static RGB[] channels = null;</b>
 <b class="fc"><i>15</i>&nbsp;    static boolean debug = false;</b>
-<i>16</i>&nbsp;
+<b class="fc"><i>16</i>&nbsp;    static String outputFileNameFormat = &quot;&quot;;</b>
 <i>17</i>&nbsp;
 <b class="fc"><i>18</i>&nbsp;    private Main() {}</b>
 <i>19</i>&nbsp;
 <i>20</i>&nbsp;    /**
 <i>21</i>&nbsp;     * Driver program for image stacking implementation
 <i>22</i>&nbsp;     * @param args Parameters for the program, use:
-<i>23</i>&nbsp;     *             -d, --debug          Set debug mode. In debug mode the id&#39;s of the sharpest images in each pixel position will be printed
-<i>24</i>&nbsp;     *             -w, --windowSize     Set window size for fourier transform. Window size must be a power of two. Multiple sizes can be provided. A separate output image will be created for each window size. Example -w 8 16 32
-<i>25</i>&nbsp;     *             -c, --channels       Set color channel(s) to use for figuring out the sharpest pixels. Possible values RED, GREEN, BLUE. A separate output image will be created for each window size. Example -c BLUE
-<i>26</i>&nbsp;     *             -f, --fileNames      Set names of the files to use. The files should reside in application/src/main/resources folder. Example -f 150x100-koralli-mirrored-top-blur.png 150x100-koralli-mirrored-left-blur.png 150x100-koralli-mirrored-right-blur.png
-<i>27</i>&nbsp;     */
-<i>28</i>&nbsp;    public static void main(String[] args) throws IllegalAccessException, InstantiationException, IOException {
-<i>29</i>&nbsp;
-<i>30</i>&nbsp;        // Default values - if command line arguments are passed these will be overritten
-<i>31</i>&nbsp;        //fileNames = new String[]{&quot;150x100-koralli-mirrored-top-blur.png&quot;, &quot;150x100-koralli-mirrored-left-blur.png&quot;, &quot;150x100-koralli-mirrored-right-blur.png&quot;};
-<b class="fc"><i>32</i>&nbsp;        fileNames = new String[]{&quot;300x200-kaunokki-top-blur.png&quot;, &quot;300x200-kaunokki-left-blur.png&quot;, &quot;300x200-kaunokki-right-blur.png&quot;};</b>
-<b class="fc"><i>33</i>&nbsp;        windowSizes = new int[]{16,32};</b>
-<b class="fc"><i>34</i>&nbsp;        channels = new RGB[]{RGB.BLUE, RGB.GREEN, RGB.RED};</b>
+<i>23</i>&nbsp;     *             -d, --debug                    Set debug mode. In debug mode the id&#39;s of the sharpest images in each pixel position will be printed
+<i>24</i>&nbsp;     *             -w, --windowSize               Set window size for fourier transform. Window size must be a power of two. Multiple sizes can be provided. A separate output image will be created for each window size. Example -w 8 16 32
+<i>25</i>&nbsp;     *             -c, --channels                 Set color channel(s) to use for figuring out the sharpest pixels. Possible values RED, GREEN, BLUE. A separate output image will be created for each window size. Example -c BLUE
+<i>26</i>&nbsp;     *             -f, --fileNames                Set names of the files to use. The files should reside in application/src/main/resources folder. Example -f pic1.png pic2.png pic3.png
+<i>27</i>&nbsp;     *             -o, --outputFileNameFormat     Format of the output file. If none is provided a default format is used. Should contain format instruction %s for channel name and %d for window size. Example output_%s_%d.png
+<i>28</i>&nbsp;     */
+<i>29</i>&nbsp;    public static void main(String[] args) throws IllegalAccessException, InstantiationException, IOException {
+<i>30</i>&nbsp;
+<b class="fc"><i>31</i>&nbsp;        System.out.println(&quot;Started&quot;);</b>
+<i>32</i>&nbsp;
+<b class="fc"><i>33</i>&nbsp;        if (args != null &amp;&amp; args.length &gt; 0)</b>
+<b class="fc"><i>34</i>&nbsp;            parseArguments(args);</b>
 <i>35</i>&nbsp;
-<b class="fc"><i>36</i>&nbsp;        if (args != null &amp;&amp; args.length &gt; 0) {</b>
-<b class="fc"><i>37</i>&nbsp;            parseArguments(args);</b>
-<i>38</i>&nbsp;        }
-<i>39</i>&nbsp;
-<b class="fc"><i>40</i>&nbsp;        System.out.println(&quot;Started&quot;);</b>
-<i>41</i>&nbsp;
-<i>42</i>&nbsp;        // Main program loop
-<b class="fc"><i>43</i>&nbsp;        for (int windowSize: windowSizes) {</b>
-<b class="fc"><i>44</i>&nbsp;            System.out.println(&quot;Using window of size &quot; + windowSize);</b>
-<b class="fc"><i>45</i>&nbsp;            for (RGB channel: channels) {</b>
-<b class="fc"><i>46</i>&nbsp;                System.out.println(&quot;Stacking channel &quot; + channel.name());</b>
-<b class="fc"><i>47</i>&nbsp;                String outputFileName = String.format(&quot;output_%s_%d_%s.png&quot;, channel.name(), windowSize, LocalDateTime.now().toString());</b>
-<b class="fc"><i>48</i>&nbsp;                makeImageStack(channel, windowSize, fileNames, outputFileName);</b>
-<i>49</i>&nbsp;            }
-<i>50</i>&nbsp;        }
-<i>51</i>&nbsp;
-<b class="fc"><i>52</i>&nbsp;        System.out.println(&quot;Finished&quot;);</b>
-<b class="fc"><i>53</i>&nbsp;    }</b>
-<i>54</i>&nbsp;
-<i>55</i>&nbsp;    /**
-<i>56</i>&nbsp;     * Method to create a stacked image by using the FocusStacking classes methods
-<i>57</i>&nbsp;     * @param channel Which color channel to use for picking teh sharpest pixel
-<i>58</i>&nbsp;     * @param windowSize Which window size to use for fourier transform
-<i>59</i>&nbsp;     * @param fileNames File names of the images to stack
-<i>60</i>&nbsp;     * @param outputFileName Output file name
-<i>61</i>&nbsp;     */
-<i>62</i>&nbsp;    private static void makeImageStack(RGB channel, int windowSize, String[] fileNames, String outputFileName) throws IOException {
-<b class="fc"><i>63</i>&nbsp;        FocusStacking fstack = new FocusStacking(channel, windowSize);</b>
-<b class="fc"><i>64</i>&nbsp;        fstack.loadImages(fileNames);</b>
-<b class="fc"><i>65</i>&nbsp;        fstack.computeSharpestPixels();</b>
-<b class="fc"><i>66</i>&nbsp;        if (debug)</b>
-<b class="fc"><i>67</i>&nbsp;            fstack.printSharpestPixelIndexes();</b>
-<b class="fc"><i>68</i>&nbsp;        fstack.saveImage(outputFileName);</b>
-<b class="fc"><i>69</i>&nbsp;    }</b>
-<i>70</i>&nbsp;    /**
-<i>71</i>&nbsp;     * Method to parse command line arguments
-<i>72</i>&nbsp;     * @param args
-<i>73</i>&nbsp;     * @throws InstantiationException
-<i>74</i>&nbsp;     * @throws IllegalAccessException
-<i>75</i>&nbsp;     */
-<i>76</i>&nbsp;    private static void parseArguments(String[] args) throws InstantiationException, IllegalAccessException {
-<i>77</i>&nbsp;
-<b class="fc"><i>78</i>&nbsp;        MyArrayList&lt;String&gt; list_fileNames = new MyArrayList&lt;&gt;();</b>
-<b class="fc"><i>79</i>&nbsp;        MyArrayList&lt;RGB&gt; list_channels = new MyArrayList&lt;&gt;();</b>
-<b class="fc"><i>80</i>&nbsp;        MyArrayList&lt;Integer&gt; list_windowSizes = new MyArrayList&lt;&gt;();</b>
-<i>81</i>&nbsp;
-<b class="fc"><i>82</i>&nbsp;        for (int i = 0; i &lt; args.length; i++) {</b>
-<b class="fc"><i>83</i>&nbsp;            if (args[i].startsWith(&quot;-&quot;)) {</b>
-<b class="fc"><i>84</i>&nbsp;                switch (args[i]) {</b>
-<i>85</i>&nbsp;                    case &quot;-d&quot;:
-<i>86</i>&nbsp;                    case &quot;--debug&quot;:
-<b class="fc"><i>87</i>&nbsp;                        debug = true;</b>
-<b class="fc"><i>88</i>&nbsp;                        break;</b>
-<i>89</i>&nbsp;                    case &quot;-c&quot;:
-<i>90</i>&nbsp;                    case &quot;--channels&quot;:
-<b class="fc"><i>91</i>&nbsp;                        for (int j = i+1; j &lt; args.length; j++) {</b>
-<b class="fc"><i>92</i>&nbsp;                            if (args[j].startsWith(&quot;-&quot;)) {</b>
-<b class="fc"><i>93</i>&nbsp;                                i = j-1;</b>
-<b class="fc"><i>94</i>&nbsp;                                break;</b>
-<i>95</i>&nbsp;                            }
-<b class="fc"><i>96</i>&nbsp;                            list_channels.add(RGB.parse(args[j]));</b>
-<b class="fc"><i>97</i>&nbsp;                            i = j;</b>
-<i>98</i>&nbsp;                        }
-<b class="fc"><i>99</i>&nbsp;                        channels = new RGB[list_channels.getSize()];</b>
-<b class="fc"><i>100</i>&nbsp;                        for (int k = 0; k &lt; list_channels.getSize(); k++)</b>
-<b class="fc"><i>101</i>&nbsp;                            channels[k] = list_channels.get(k);</b>
-<b class="fc"><i>102</i>&nbsp;                        break;</b>
-<i>103</i>&nbsp;                    case &quot;-w&quot;:
-<i>104</i>&nbsp;                    case &quot;--windowSize&quot;:
-<b class="fc"><i>105</i>&nbsp;                        for (int j = i+1; j &lt; args.length; j++) {</b>
-<b class="fc"><i>106</i>&nbsp;                            if (args[j].startsWith(&quot;-&quot;)) {</b>
-<b class="fc"><i>107</i>&nbsp;                                break;</b>
-<i>108</i>&nbsp;                            }
-<b class="fc"><i>109</i>&nbsp;                            list_windowSizes.add(Integer.parseInt(args[j]));</b>
-<b class="fc"><i>110</i>&nbsp;                            i = j;</b>
-<i>111</i>&nbsp;                        }
-<b class="fc"><i>112</i>&nbsp;                        windowSizes = new int[list_windowSizes.getSize()];</b>
-<b class="fc"><i>113</i>&nbsp;                        for (int k = 0; k &lt; list_windowSizes.getSize(); k++)</b>
-<b class="fc"><i>114</i>&nbsp;                            windowSizes[k] = list_windowSizes.get(k);</b>
-<b class="fc"><i>115</i>&nbsp;                        break;</b>
-<i>116</i>&nbsp;                    case &quot;-f&quot;:
-<i>117</i>&nbsp;                    case &quot;--fileNames&quot;:
-<b class="fc"><i>118</i>&nbsp;                        for (int j = i+1; j &lt; args.length; j++) {</b>
-<b class="fc"><i>119</i>&nbsp;                            if (args[j].startsWith(&quot;-&quot;)) {</b>
-<b class="fc"><i>120</i>&nbsp;                                break;</b>
-<i>121</i>&nbsp;                            }
-<b class="fc"><i>122</i>&nbsp;                            list_fileNames.add(args[j]);</b>
-<b class="fc"><i>123</i>&nbsp;                            i = j;</b>
-<i>124</i>&nbsp;                        }
-<b class="fc"><i>125</i>&nbsp;                        fileNames = new String[list_fileNames.getSize()];</b>
-<b class="fc"><i>126</i>&nbsp;                        for (int k = 0; k &lt; list_fileNames.getSize(); k++)</b>
-<b class="fc"><i>127</i>&nbsp;                            fileNames[k] = list_fileNames.get(k);</b>
-<b class="fc"><i>128</i>&nbsp;                        break;</b>
-<i>129</i>&nbsp;                    //default:
-<i>130</i>&nbsp;                    //   throw new IllegalArgumentException(&quot;Illegal argument &quot; + args[i]);
-<i>131</i>&nbsp;                }
-<i>132</i>&nbsp;            }
-<i>133</i>&nbsp;            else {
-<b class="fc"><i>134</i>&nbsp;                throw new IllegalArgumentException(&quot;Illegal argument &quot; + args[i]);</b>
-<i>135</i>&nbsp;            }
-<i>136</i>&nbsp;        }
-<b class="fc"><i>137</i>&nbsp;    }</b>
-<i>138</i>&nbsp;}
+<b class="fc"><i>36</i>&nbsp;        if (debug) {</b>
+<b class="fc"><i>37</i>&nbsp;            if (fileNames == null) {</b>
+<b class="nc"><i>38</i>&nbsp;                fileNames = new String[]{&quot;150x100-koralli-mirrored-top-blur.png&quot;, &quot;150x100-koralli-mirrored-left-blur.png&quot;, &quot;150x100-koralli-mirrored-right-blur.png&quot;};</b>
+<i>39</i>&nbsp;                //fileNames = new String[]{&quot;300x200-kaunokki-top-blur.png&quot;, &quot;300x200-kaunokki-left-blur.png&quot;, &quot;300x200-kaunokki-right-blur.png&quot;};
+<i>40</i>&nbsp;            }
+<b class="fc"><i>41</i>&nbsp;            if (windowSizes == null)</b>
+<b class="nc"><i>42</i>&nbsp;                windowSizes = new int[]{16,32};</b>
+<b class="fc"><i>43</i>&nbsp;            if (channels == null)</b>
+<b class="nc"><i>44</i>&nbsp;                channels = new RGB[]{RGB.BLUE, RGB.GREEN, RGB.RED};</b>
+<i>45</i>&nbsp;        }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;        // Main program loop
+<b class="fc"><i>48</i>&nbsp;        for (int windowSize: windowSizes) {</b>
+<b class="fc"><i>49</i>&nbsp;            System.out.println(&quot;Using window of size &quot; + windowSize);</b>
+<b class="fc"><i>50</i>&nbsp;            for (RGB channel: channels) {</b>
+<b class="fc"><i>51</i>&nbsp;                System.out.println(&quot;Stacking channel &quot; + channel.name());</b>
+<b class="fc"><i>52</i>&nbsp;                if (outputFileNameFormat == &quot;&quot;)</b>
+<b class="nc"><i>53</i>&nbsp;                    outputFileNameFormat = &quot;output_%s_%d_&quot; + LocalDateTime.now().toString() + &quot;.png&quot;;</b>
+<b class="fc"><i>54</i>&nbsp;                String outputFileName = String.format(outputFileNameFormat, channel.name(), windowSize);</b>
+<b class="fc"><i>55</i>&nbsp;                makeImageStack(channel, windowSize, fileNames, outputFileName);</b>
+<i>56</i>&nbsp;            }
+<i>57</i>&nbsp;        }
+<i>58</i>&nbsp;
+<b class="fc"><i>59</i>&nbsp;        System.out.println(&quot;Finished&quot;);</b>
+<b class="fc"><i>60</i>&nbsp;    }</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /**
+<i>63</i>&nbsp;     * Method to create a stacked image by using the FocusStacking classes methods
+<i>64</i>&nbsp;     * @param channel Which color channel to use for picking teh sharpest pixel
+<i>65</i>&nbsp;     * @param windowSize Which window size to use for fourier transform
+<i>66</i>&nbsp;     * @param fileNames File names of the images to stack
+<i>67</i>&nbsp;     * @param outputFileName Output file name
+<i>68</i>&nbsp;     */
+<i>69</i>&nbsp;    private static void makeImageStack(RGB channel, int windowSize, String[] fileNames, String outputFileName) throws IOException {
+<b class="fc"><i>70</i>&nbsp;        FocusStacking fstack = new FocusStacking(channel, windowSize);</b>
+<b class="fc"><i>71</i>&nbsp;        fstack.loadImages(fileNames);</b>
+<b class="fc"><i>72</i>&nbsp;        fstack.computeSharpestPixels();</b>
+<b class="fc"><i>73</i>&nbsp;        if (debug)</b>
+<b class="fc"><i>74</i>&nbsp;            fstack.printSharpestPixelIndexes();</b>
+<b class="fc"><i>75</i>&nbsp;        fstack.saveImage(outputFileName);</b>
+<b class="fc"><i>76</i>&nbsp;    }</b>
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * Method to parse command line arguments
+<i>79</i>&nbsp;     * @param args
+<i>80</i>&nbsp;     * @throws InstantiationException
+<i>81</i>&nbsp;     * @throws IllegalAccessException
+<i>82</i>&nbsp;     */
+<i>83</i>&nbsp;    private static void parseArguments(String[] args) throws InstantiationException, IllegalAccessException {
+<i>84</i>&nbsp;
+<b class="fc"><i>85</i>&nbsp;        MyArrayList&lt;String&gt; list_fileNames = new MyArrayList&lt;&gt;();</b>
+<b class="fc"><i>86</i>&nbsp;        MyArrayList&lt;RGB&gt; list_channels = new MyArrayList&lt;&gt;();</b>
+<b class="fc"><i>87</i>&nbsp;        MyArrayList&lt;Integer&gt; list_windowSizes = new MyArrayList&lt;&gt;();</b>
+<i>88</i>&nbsp;
+<b class="fc"><i>89</i>&nbsp;        for (int i = 0; i &lt; args.length; i++) {</b>
+<b class="fc"><i>90</i>&nbsp;            if (args[i].startsWith(&quot;-&quot;)) {</b>
+<b class="fc"><i>91</i>&nbsp;                switch (args[i]) {</b>
+<i>92</i>&nbsp;                    case &quot;-d&quot;:
+<i>93</i>&nbsp;                    case &quot;--debug&quot;:
+<b class="fc"><i>94</i>&nbsp;                        debug = true;</b>
+<b class="fc"><i>95</i>&nbsp;                        break;</b>
+<i>96</i>&nbsp;                    case &quot;-c&quot;:
+<i>97</i>&nbsp;                    case &quot;--channels&quot;:
+<b class="fc"><i>98</i>&nbsp;                        for (int j = i+1; j &lt; args.length; j++) {</b>
+<b class="fc"><i>99</i>&nbsp;                            if (args[j].startsWith(&quot;-&quot;)) {</b>
+<b class="fc"><i>100</i>&nbsp;                                i = j-1;</b>
+<b class="fc"><i>101</i>&nbsp;                                break;</b>
+<i>102</i>&nbsp;                            }
+<b class="fc"><i>103</i>&nbsp;                            list_channels.add(RGB.parse(args[j]));</b>
+<b class="fc"><i>104</i>&nbsp;                            i = j;</b>
+<i>105</i>&nbsp;                        }
+<b class="fc"><i>106</i>&nbsp;                        channels = new RGB[list_channels.getSize()];</b>
+<b class="fc"><i>107</i>&nbsp;                        for (int k = 0; k &lt; list_channels.getSize(); k++)</b>
+<b class="fc"><i>108</i>&nbsp;                            channels[k] = list_channels.get(k);</b>
+<b class="fc"><i>109</i>&nbsp;                        break;</b>
+<i>110</i>&nbsp;                    case &quot;-w&quot;:
+<i>111</i>&nbsp;                    case &quot;--windowSize&quot;:
+<b class="fc"><i>112</i>&nbsp;                        for (int j = i+1; j &lt; args.length; j++) {</b>
+<b class="fc"><i>113</i>&nbsp;                            if (args[j].startsWith(&quot;-&quot;)) {</b>
+<b class="fc"><i>114</i>&nbsp;                                break;</b>
+<i>115</i>&nbsp;                            }
+<b class="fc"><i>116</i>&nbsp;                            list_windowSizes.add(Integer.parseInt(args[j]));</b>
+<b class="fc"><i>117</i>&nbsp;                            i = j;</b>
+<i>118</i>&nbsp;                        }
+<b class="fc"><i>119</i>&nbsp;                        windowSizes = new int[list_windowSizes.getSize()];</b>
+<b class="fc"><i>120</i>&nbsp;                        for (int k = 0; k &lt; list_windowSizes.getSize(); k++)</b>
+<b class="fc"><i>121</i>&nbsp;                            windowSizes[k] = list_windowSizes.get(k);</b>
+<b class="fc"><i>122</i>&nbsp;                        break;</b>
+<i>123</i>&nbsp;                    case &quot;-f&quot;:
+<i>124</i>&nbsp;                    case &quot;--fileNames&quot;:
+<b class="fc"><i>125</i>&nbsp;                        for (int j = i+1; j &lt; args.length; j++) {</b>
+<b class="fc"><i>126</i>&nbsp;                            if (args[j].startsWith(&quot;-&quot;)) {</b>
+<b class="fc"><i>127</i>&nbsp;                                break;</b>
+<i>128</i>&nbsp;                            }
+<b class="fc"><i>129</i>&nbsp;                            list_fileNames.add(args[j]);</b>
+<b class="fc"><i>130</i>&nbsp;                            i = j;</b>
+<i>131</i>&nbsp;                        }
+<b class="fc"><i>132</i>&nbsp;                        fileNames = new String[list_fileNames.getSize()];</b>
+<b class="fc"><i>133</i>&nbsp;                        for (int k = 0; k &lt; list_fileNames.getSize(); k++)</b>
+<b class="fc"><i>134</i>&nbsp;                            fileNames[k] = list_fileNames.get(k);</b>
+<b class="fc"><i>135</i>&nbsp;                        break;</b>
+<i>136</i>&nbsp;                    case &quot;-o&quot;:
+<i>137</i>&nbsp;                    case &quot;--outputFileNameFormat&quot;:
+<b class="fc"><i>138</i>&nbsp;                        outputFileNameFormat = args[i+1];</b>
+<b class="fc"><i>139</i>&nbsp;                        i++;</b>
+<b class="fc"><i>140</i>&nbsp;                        break;</b>
+<i>141</i>&nbsp;                    //default:
+<i>142</i>&nbsp;                    //   throw new IllegalArgumentException(&quot;Illegal argument &quot; + args[i]);
+<i>143</i>&nbsp;                }
+<i>144</i>&nbsp;            }
+<i>145</i>&nbsp;            else {
+<b class="fc"><i>146</i>&nbsp;                throw new IllegalArgumentException(&quot;Illegal argument &quot; + args[i]);</b>
+<i>147</i>&nbsp;            }
+<i>148</i>&nbsp;        }
+<b class="fc"><i>149</i>&nbsp;    }</b>
+<i>150</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-06-09 06:10</div>
+    <div style="float:right;">generated on 2019-06-09 07:53</div>
 </div>
 </body>
 </html>
