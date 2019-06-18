@@ -80,60 +80,58 @@
 <i>6</i>&nbsp;import java.io.IOException;
 <i>7</i>&nbsp;
 <i>8</i>&nbsp;/**
-<i>9</i>&nbsp; * @author      Eeva-Maria Laiho &lt;eeva-maria.laiho@helsinki.fi&gt;
-<i>10</i>&nbsp; * @version     0.3
-<i>11</i>&nbsp; * @since       0.3
-<i>12</i>&nbsp; */
-<i>13</i>&nbsp;public final class MyImage {
-<i>14</i>&nbsp;
-<i>15</i>&nbsp;    private int imageType;
-<i>16</i>&nbsp;    private int[] pixels;
-<i>17</i>&nbsp;    private int width;
-<i>18</i>&nbsp;    private int height;
-<i>19</i>&nbsp;
-<i>20</i>&nbsp;    /**
-<i>21</i>&nbsp;     * Pixel width of the image
-<i>22</i>&nbsp;     */
-<b class="fc"><i>23</i>&nbsp;    public int getWidth() { return width; }</b>
-<i>24</i>&nbsp;    /**
-<i>25</i>&nbsp;     * Pixel height of the image
-<i>26</i>&nbsp;     */
-<b class="fc"><i>27</i>&nbsp;    public int getHeight() { return this.height; }</b>
-<i>28</i>&nbsp;    /**
-<i>29</i>&nbsp;     * Get pixels of an image
-<i>30</i>&nbsp;     * @return Pixels as an integer array
-<i>31</i>&nbsp;     */
-<b class="fc"><i>32</i>&nbsp;    public int[] getPixels() { return pixels; }</b>
-<i>33</i>&nbsp;    /**
-<i>34</i>&nbsp;     * Load the image 
-<i>35</i>&nbsp;     * @param path
-<i>36</i>&nbsp;     * @throws Exception
-<i>37</i>&nbsp;     */
-<b class="fc"><i>38</i>&nbsp;    public MyImage(String path) throws IOException {</b>
-<i>39</i>&nbsp;        // Load the image
-<b class="fc"><i>40</i>&nbsp;        BufferedImage image = null;</b>
-<b class="fc"><i>41</i>&nbsp;        image = ImageIO.read(new File(path));</b>
-<b class="fc"><i>42</i>&nbsp;        this.width = image.getWidth();</b>
-<b class="fc"><i>43</i>&nbsp;        this.height = image.getHeight();</b>
-<b class="fc"><i>44</i>&nbsp;        this.imageType = image.getType();</b>
-<i>45</i>&nbsp;
-<i>46</i>&nbsp;        // Get pixels and green pixels
-<b class="fc"><i>47</i>&nbsp;        this.pixels = new int[this.width*this.height];</b>
-<b class="fc"><i>48</i>&nbsp;        for (int x = 0; x &lt; this.getWidth(); x++) {</b>
-<b class="fc"><i>49</i>&nbsp;            for (int y = 0; y &lt; this.getHeight(); y++) {</b>
-<b class="fc"><i>50</i>&nbsp;                int rgb = image.getRGB(x,y);</b>
-<b class="fc"><i>51</i>&nbsp;                int idx = x + this.width*y;</b>
-<b class="fc"><i>52</i>&nbsp;                this.pixels[idx] = rgb;</b>
-<i>53</i>&nbsp;            }
-<i>54</i>&nbsp;        }
-<b class="fc"><i>55</i>&nbsp;    }</b>
-<i>56</i>&nbsp;}
+<i>9</i>&nbsp; * A class to represent an image
+<i>10</i>&nbsp; */
+<i>11</i>&nbsp;public class MyImage {
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;    private int imageType;
+<i>14</i>&nbsp;    private int[] pixels;
+<i>15</i>&nbsp;    private int width;
+<i>16</i>&nbsp;    private int height;
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    /**
+<i>19</i>&nbsp;     * Pixel width of the image
+<i>20</i>&nbsp;     */
+<b class="fc"><i>21</i>&nbsp;    public int getWidth() { return width; }</b>
+<i>22</i>&nbsp;    /**
+<i>23</i>&nbsp;     * Pixel height of the image
+<i>24</i>&nbsp;     */
+<b class="fc"><i>25</i>&nbsp;    public int getHeight() { return this.height; }</b>
+<i>26</i>&nbsp;    /**
+<i>27</i>&nbsp;     * Get pixels of an image
+<i>28</i>&nbsp;     * @return Pixels as an integer array
+<i>29</i>&nbsp;     */
+<b class="fc"><i>30</i>&nbsp;    public int[] getPixels() { return pixels; }</b>
+<i>31</i>&nbsp;    /**
+<i>32</i>&nbsp;     * Load the image 
+<i>33</i>&nbsp;     * @param path
+<i>34</i>&nbsp;     * @throws Exception
+<i>35</i>&nbsp;     */
+<b class="fc"><i>36</i>&nbsp;    public MyImage(String path) throws IOException {</b>
+<i>37</i>&nbsp;        // Load the image
+<b class="fc"><i>38</i>&nbsp;        BufferedImage image = null;</b>
+<b class="fc"><i>39</i>&nbsp;        image = ImageIO.read(new File(path));</b>
+<b class="fc"><i>40</i>&nbsp;        this.width = image.getWidth();</b>
+<b class="fc"><i>41</i>&nbsp;        this.height = image.getHeight();</b>
+<b class="fc"><i>42</i>&nbsp;        this.imageType = image.getType();</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;        // Get pixels and green pixels
+<b class="fc"><i>45</i>&nbsp;        this.pixels = new int[this.width*this.height];</b>
+<b class="fc"><i>46</i>&nbsp;        for (int x = 0; x &lt; this.getWidth(); x++) {</b>
+<b class="fc"><i>47</i>&nbsp;            for (int y = 0; y &lt; this.getHeight(); y++) {</b>
+<b class="fc"><i>48</i>&nbsp;                int rgb = image.getRGB(x,y);</b>
+<b class="fc"><i>49</i>&nbsp;                int idx = x + this.width*y;</b>
+<b class="fc"><i>50</i>&nbsp;                this.pixels[idx] = rgb;</b>
+<i>51</i>&nbsp;            }
+<i>52</i>&nbsp;        }
+<b class="fc"><i>53</i>&nbsp;    }</b>
+<i>54</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-06-09 07:53</div>
+    <div style="float:right;">generated on 2019-06-18 15:03</div>
 </div>
 </body>
 </html>
