@@ -61,7 +61,7 @@
     100%
   </span>
   <span class="absValue">
-    (16/ 16)
+    (19/ 19)
   </span>
 </td>
 </tr>
@@ -110,28 +110,32 @@
 <b class="fc"><i>36</i>&nbsp;    public MyImage(String path) throws IOException {</b>
 <i>37</i>&nbsp;        // Load the image
 <b class="fc"><i>38</i>&nbsp;        BufferedImage image = null;</b>
-<b class="fc"><i>39</i>&nbsp;        image = ImageIO.read(new File(path));</b>
-<b class="fc"><i>40</i>&nbsp;        this.width = image.getWidth();</b>
-<b class="fc"><i>41</i>&nbsp;        this.height = image.getHeight();</b>
-<b class="fc"><i>42</i>&nbsp;        this.imageType = image.getType();</b>
-<i>43</i>&nbsp;
-<i>44</i>&nbsp;        // Get pixels and green pixels
-<b class="fc"><i>45</i>&nbsp;        this.pixels = new int[this.width*this.height];</b>
-<b class="fc"><i>46</i>&nbsp;        for (int x = 0; x &lt; this.getWidth(); x++) {</b>
-<b class="fc"><i>47</i>&nbsp;            for (int y = 0; y &lt; this.getHeight(); y++) {</b>
-<b class="fc"><i>48</i>&nbsp;                int rgb = image.getRGB(x,y);</b>
-<b class="fc"><i>49</i>&nbsp;                int idx = x + this.width*y;</b>
-<b class="fc"><i>50</i>&nbsp;                this.pixels[idx] = rgb;</b>
-<i>51</i>&nbsp;            }
-<i>52</i>&nbsp;        }
-<b class="fc"><i>53</i>&nbsp;    }</b>
-<i>54</i>&nbsp;}
+<i>39</i>&nbsp;        try {
+<b class="fc"><i>40</i>&nbsp;            image = ImageIO.read(new File(path));</b>
+<b class="fc"><i>41</i>&nbsp;        } catch (IOException e) {</b>
+<b class="fc"><i>42</i>&nbsp;            throw new IOException(&quot;Trying to read image &quot; + path, e);</b>
+<b class="fc"><i>43</i>&nbsp;        }</b>
+<b class="fc"><i>44</i>&nbsp;        this.width = image.getWidth();</b>
+<b class="fc"><i>45</i>&nbsp;        this.height = image.getHeight();</b>
+<b class="fc"><i>46</i>&nbsp;        this.imageType = image.getType();</b>
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;        // Get pixels and green pixels
+<b class="fc"><i>49</i>&nbsp;        this.pixels = new int[this.width*this.height];</b>
+<b class="fc"><i>50</i>&nbsp;        for (int x = 0; x &lt; this.getWidth(); x++) {</b>
+<b class="fc"><i>51</i>&nbsp;            for (int y = 0; y &lt; this.getHeight(); y++) {</b>
+<b class="fc"><i>52</i>&nbsp;                int rgb = image.getRGB(x,y);</b>
+<b class="fc"><i>53</i>&nbsp;                int idx = x + this.width*y;</b>
+<b class="fc"><i>54</i>&nbsp;                this.pixels[idx] = rgb;</b>
+<i>55</i>&nbsp;            }
+<i>56</i>&nbsp;        }
+<b class="fc"><i>57</i>&nbsp;    }</b>
+<i>58</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-06-18 15:03</div>
+    <div style="float:right;">generated on 2019-06-20 06:24</div>
 </div>
 </body>
 </html>
